@@ -1,0 +1,7 @@
+{
+  "name": "QR-Shelving",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
