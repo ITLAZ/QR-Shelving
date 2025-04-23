@@ -11,6 +11,22 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'qr-scan',
+    loadChildren: () => import('./pages/product-scan/product-scan.module').then( m => m.ProductScanPageModule)
+  },
+  {
+    path: 'qr-shelve',
+    loadChildren: () => import('./pages/shelve-scan/shelve-scan.module').then( m => m.ShelveScanPageModule)
+  },
+  {
+    path: 'inventory',
+    loadChildren: () => import('./pages/inventory/inventory.module').then( m => m.InventoryPageModule)
+  },
+  {
+    path: 'add-product',
+    loadChildren: () => import('./pages/add-product/add-product.module').then( m => m.AddProductPageModule)
+  },
 ];
 
 @NgModule({
