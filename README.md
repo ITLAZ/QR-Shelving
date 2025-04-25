@@ -81,4 +81,12 @@ Esto abrirá la aplicación en tu navegador predeterminado.
 
 ### Desarrollo
 
+- **Rebeca Jimenez**
+- **Jordan Martinez**
+- **Ignacio Tapia**
+
 ### Documentación
+
+- **Alessandro Andrade**
+- **Diego Baldiviezo**
+- **Natalia Gonzales**
