@@ -8,12 +8,18 @@ import { AddProductPageRoutingModule } from './add-product-routing.module';
 
 import { AddProductPage } from './add-product.page';
 
+import { QRCodeComponent } from 'angularx-qrcode'; // ✅ Importar el componente QRCode
+
+import { ReactiveFormsModule } from '@angular/forms'; // ✅ Importar Reactive Forms
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AddProductPageRoutingModule
+    AddProductPageRoutingModule,
+    QRCodeComponent, // ✅ Añadir el componente QRCode a los imports
+    ReactiveFormsModule // ✅ Añadir Reactive Forms a los imports
   ],
   declarations: [AddProductPage]
 })

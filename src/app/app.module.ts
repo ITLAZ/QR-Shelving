@@ -7,10 +7,14 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { QrScannerModule } from './shared/qr-scanner/qr-scanner.module';
+import { QRCodeComponent } from 'angularx-qrcode';
+
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, QrScannerModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, QrScannerModule, QRCodeComponent, ReactiveFormsModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })

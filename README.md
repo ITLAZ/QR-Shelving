@@ -55,7 +55,7 @@ npm install -g @ionic/cli
 Clona este repositorio en tu máquina local:
 
 ```bash
-git clone https://github.com/tu-usuario/qr-shelving.git
+git clone https://github.com/ITLAZ/QR-Shelving
 cd qr-shelving
 ```
 
