@@ -1,0 +1,34 @@
+.inventory-table {
+  ion-row {
+    border-bottom: 1px solid #ccc;
+
+    ion-col {
+      padding: 10px;
+      border-right: 1px solid #ccc;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+
+  .header-row {
+    background-color: #57c476;
+    font-weight: bold;
+    border-top: 1px solid #32c648;
+    color: white; 
+  }
+
+  .data-row {
+    background-color: #fff;
+    color: #222;
+  }
+}
+
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
