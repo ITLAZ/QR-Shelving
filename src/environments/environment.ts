@@ -3,7 +3,16 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebaseConfig:{
+    apiKey: "AIzaSyAOju67unLqz8NlZ2VfrJpWWykD8KFN_Ss",
+    authDomain: "supermercado-poka.firebaseapp.com",
+    projectId: "supermercado-poka",
+    storageBucket: "supermercado-poka.firebasestorage.app",
+    messagingSenderId: "603775931969",
+    appId: "1:603775931969:web:04c72c74f57c0a127698c0",
+    measurementId: "G-14FW74NNYG"
+  }  
 };
 
 /*
