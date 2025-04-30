@@ -1,13 +1,47 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>inventory</ion-title>
+    <ion-title>Inventario</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">inventory</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Tabla de Productos</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-grid class="inventory-table">
+        <ion-row class="header-row">
+          <ion-col size="1"><strong>No.</strong></ion-col>
+          <ion-col size="3"><strong>Producto</strong></ion-col>
+          <ion-col size="2"><strong>Cantidad</strong></ion-col>
+          <ion-col size="2"><strong>Precio</strong></ion-col>
+          <ion-col size="2"><strong>Fecha Venc.</strong></ion-col>
+          <ion-col size="1"><strong>Editar</strong></ion-col>
+          <ion-col size="1"><strong>Eliminar</strong></ion-col>
+        </ion-row>
+
+        <ion-row *ngFor="let element of displayedData" class="data-row">
+          <ion-col size="1">{{ element.position }}</ion-col>
+          <ion-col size="3">{{ element.name }}</ion-col>
+          <ion-col size="2">{{ element.quantity }}</ion-col>
+          <ion-col size="2">{{ element.price | currency }}</ion-col>
+          <ion-col size="2">{{ element.expirationDate }}</ion-col>
+          <ion-col size="1">
+            <ion-button color="primary" expand="full" size="small">Editar</ion-button>
+          </ion-col>
+          <ion-col size="1">
+            <ion-button color="danger" expand="full" size="small">Eliminar</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <div class="pagination-buttons">
+        <ion-button (click)="prevPage()" [disabled]="currentPage === 0" fill="outline">Anterior</ion-button>
+        <ion-label> Página {{ currentPage + 1 }} de {{ totalPages }} </ion-label>
+        <ion-button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1" fill="outline">Siguiente</ion-button>
+      </div>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
