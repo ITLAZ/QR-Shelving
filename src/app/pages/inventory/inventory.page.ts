@@ -1,40 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
   selector: 'app-inventory',
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss'],
-  standalone: false,
+  standalone: false
 })
-export class InventoryPage implements OnInit {
+export class InventoryPage {
   elementsPerPage = 5;
   currentPage = 0;
-
-  displayedData: PeriodicElement[] = [];
+  displayedData: any[] = [];
   totalPages = 0;
+  fullData: any[] = [];
+  inventario: any[] = [];
 
-  ELEMENT_DATA: PeriodicElement[] = [
-    { position: 1, name: 'Pan', quantity: 30, price: 1.50, expirationDate: '01/11/2026' },
-    { position: 2, name: 'Barra de chocolate', quantity: 20, price: 2.00, expirationDate: '10/10/2026' },
-    { position: 3, name: 'Gaseosa', quantity: 50, price: 1.20, expirationDate: '15/09/2026' },
-    { position: 4, name: 'Agua mineral', quantity: 60, price: 0.80, expirationDate: '22/08/2026' },
-    { position: 5, name: 'Leche', quantity: 40, price: 1.90, expirationDate: '05/11/2026' },
-    { position: 6, name: 'Arroz', quantity: 70, price: 3.00, expirationDate: '30/12/2026' },
-    { position: 7, name: 'Aceite', quantity: 25, price: 4.50, expirationDate: '17/01/2027' },
-    { position: 8, name: 'Sal', quantity: 80, price: 0.60, expirationDate: '15/05/2027' },
-    { position: 9, name: 'Azúcar', quantity: 55, price: 2.10, expirationDate: '09/03/2027' },
-    { position: 10, name: 'Yogurt', quantity: 35, price: 1.75, expirationDate: '12/07/2026' },
-  ];
-
-  ngOnInit() {
-    this.updateDisplayedData();
+  constructor(private dbService: DatabaseService) {
+    this.dbService.fetchFirestoreCollection('Productos').subscribe(data => {
+      this.fullData = data;
+      this.totalPages = Math.ceil(this.fullData.length / this.elementsPerPage);
+      this.updateDisplayedData();
+      this.inventario = data;
+      console.log(data);
+    });
   }
 
   updateDisplayedData() {
     const start = this.currentPage * this.elementsPerPage;
     const end = start + this.elementsPerPage;
-    this.displayedData = this.ELEMENT_DATA.slice(start, end);
-    this.totalPages = Math.ceil(this.ELEMENT_DATA.length / this.elementsPerPage);
+    this.displayedData = this.fullData.slice(start, end);
   }
 
   nextPage() {
@@ -50,12 +44,16 @@ export class InventoryPage implements OnInit {
       this.updateDisplayedData();
     }
   }
-}
 
-export interface PeriodicElement {
-  position: number;
-  name: string;
-  quantity: number;
-  price: number;
-  expirationDate: string;
+  editItem(item: any) {
+    console.log('Editar', item);
+  }
+
+  deleteItem(id: string) {
+    this.dbService.deleteFireStoreDocument('Productos', id).then(() => {
+      this.fullData = this.fullData.filter(item => item.id !== id);
+      this.totalPages = Math.ceil(this.fullData.length / this.elementsPerPage);
+      this.updateDisplayedData();
+    });
+  }
 }

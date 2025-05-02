@@ -13,28 +13,36 @@
     <ion-card-content>
       <ion-grid class="inventory-table">
         <ion-row class="header-row">
-          <ion-col size="1"><strong>No.</strong></ion-col>
-          <ion-col size="3"><strong>Producto</strong></ion-col>
-          <ion-col size="2"><strong>Cantidad</strong></ion-col>
-          <ion-col size="2"><strong>Precio</strong></ion-col>
-          <ion-col size="2"><strong>Fecha Venc.</strong></ion-col>
-          <ion-col size="1"><strong>Editar</strong></ion-col>
-          <ion-col size="1"><strong>Eliminar</strong></ion-col>
+          <ion-col size="0.5"><strong>No.</strong></ion-col>
+          <ion-col size="4"><strong>Producto</strong></ion-col>
+          <ion-col size="1"><strong>Cantidad</strong></ion-col>
+          <ion-col size="2"><strong>Precio (Bs)</strong></ion-col>
+          <ion-col size="2"><strong>Vencimiento</strong></ion-col>
+          <ion-col size="1.2"><strong>Editar</strong></ion-col>
+          <ion-col size="1.2"><strong>Eliminar</strong></ion-col>
         </ion-row>
 
-        <ion-row *ngFor="let element of displayedData" class="data-row">
-          <ion-col size="1">{{ element.position }}</ion-col>
-          <ion-col size="3">{{ element.name }}</ion-col>
-          <ion-col size="2">{{ element.quantity }}</ion-col>
-          <ion-col size="2">{{ element.price | currency }}</ion-col>
-          <ion-col size="2">{{ element.expirationDate }}</ion-col>
-          <ion-col size="1">
-            <ion-button color="primary" expand="full" size="small">Editar</ion-button>
+        <ion-row *ngFor="let element of displayedData; let i = index" class="data-row">
+          <ion-col size="0.5">{{ i + 1 + (currentPage * elementsPerPage) }}</ion-col>
+          <ion-col size="4">{{ element.Producto }}</ion-col>
+          <ion-col size="1">{{ element.Cantidad }}</ion-col>
+          <ion-col size="2">{{ element.Precio }} Bs</ion-col>
+          <ion-col size="2">{{ element['Fecha de vencimiento'] }}</ion-col>
+          <ion-col size="1.2">
+            <ion-button color="primary" size="small" fill="solid" (click)="editItem(element)">
+              <ion-icon slot="start" name="create-outline"></ion-icon>
+              Editar
+            </ion-button>
           </ion-col>
-          <ion-col size="1">
-            <ion-button color="danger" expand="full" size="small">Eliminar</ion-button>
+          <ion-col size="1.2">
+            <ion-button color="danger" size="small" fill="solid" (click)="deleteItem(element.id)">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Eliminar
+            </ion-button>
           </ion-col>
         </ion-row>
+
+
       </ion-grid>
 
       <div class="pagination-buttons">
