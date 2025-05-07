@@ -18,6 +18,7 @@
           <ion-col size="1"><strong>Cantidad</strong></ion-col>
           <ion-col size="2"><strong>Precio (Bs)</strong></ion-col>
           <ion-col size="2"><strong>Vencimiento</strong></ion-col>
+          <ion-col size="1.1"><strong>QR</strong></ion-col>
           <ion-col size="1.2"><strong>Editar</strong></ion-col>
           <ion-col size="1.2"><strong>Eliminar</strong></ion-col>
         </ion-row>
@@ -28,6 +29,11 @@
           <ion-col size="1">{{ element.Cantidad }}</ion-col>
           <ion-col size="2">{{ element.Precio }} Bs</ion-col>
           <ion-col size="2">{{ element['Fecha de vencimiento'] }}</ion-col>
+          <ion-col size="1.1">
+            <ion-button color="medium" size="small" (click)="openQRModal(element)">
+              <ion-icon slot="icon-only" name="qr-code-outline"></ion-icon>
+            </ion-button>
+          </ion-col>
           <ion-col size="1.2">
             <ion-button color="primary" size="small" fill="solid" (click)="editItem(element)">
               <ion-icon slot="start" name="create-outline"></ion-icon>
@@ -41,8 +47,6 @@
             </ion-button>
           </ion-col>
         </ion-row>
-
-
       </ion-grid>
 
       <div class="pagination-buttons">
@@ -52,4 +56,26 @@
       </div>
     </ion-card-content>
   </ion-card>
+
+  <!-- Modal QR -->
+  <ion-modal [isOpen]="qrModalOpen" (didDismiss)="qrModalOpen = false">
+    <ng-template>
+      <ion-header translucent>
+        <ion-toolbar>
+          <ion-title>QR del Producto</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="qrModalOpen = false">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <div class="qr-container" style="text-align: center;">
+          <img [src]="selectedQR?.qrCode" alt="QR" style="width: 200px; height: 200px;" #qrImage />
+          <p><strong>{{ selectedQR?.Producto }}</strong></p>
+          <ion-button color="success" (click)="downloadSelectedQR(qrImage)">Descargar QR</ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
