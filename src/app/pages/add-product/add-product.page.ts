@@ -23,7 +23,10 @@ export class AddProductPage implements OnInit {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0)]],
-      expiryDate: ['', Validators.required],
+      expires: ['', Validators.required],
+      quantity: ['', [Validators.required, Validators.min(0)]],
+      lot: ['', Validators.required],
+      cost: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
