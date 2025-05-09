@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ShelveScanPage } from './shelve-scan.page';
+import { AddShelfPage } from './add-shelf.page';
 
-describe('ShelveScanPage', () => {
-  let component: ShelveScanPage;
-  let fixture: ComponentFixture<ShelveScanPage>;
+describe('AddShelfPage', () => {
+  let component: AddShelfPage;
+  let fixture: ComponentFixture<AddShelfPage>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ShelveScanPage);
+    fixture = TestBed.createComponent(AddShelfPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

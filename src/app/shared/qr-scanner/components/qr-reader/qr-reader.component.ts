@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { BarcodeFormat } from '@zxing/library';
 
 @Component({
   selector: 'app-qr-reader',
@@ -8,9 +9,23 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class QrReaderComponent {
   @Input() title: string = 'Escáner QR';
-  @Output() scanned = new EventEmitter<string>();
+  @Output() scanSuccess = new EventEmitter<string>();
 
-  onCodeResult(result: string) {
-    this.scanned.emit(result);
+  allowedFormats = [BarcodeFormat.QR_CODE];
+
+  devices: MediaDeviceInfo[] = [];
+  currentDevice: MediaDeviceInfo | undefined;
+
+  ngOnInit(): void {
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      this.devices = devices.filter((device) => device.kind === 'videoinput');
+      this.currentDevice = this.devices[0]; // usa la primera cámara disponible
+    });
+  }
+
+  onCodeResult(result: string): void {
+    if (result) {
+      this.scanSuccess.emit(result);
+    }
   }
 }

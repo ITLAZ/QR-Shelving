@@ -3,6 +3,7 @@
     <ion-card-title>{{ title }}</ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <zxing-scanner></zxing-scanner>
+    <zxing-scanner [formats]="allowedFormats" [torch]="false" [autostart]="true"
+      (scanSuccess)="onCodeResult($event)"></zxing-scanner>
   </ion-card-content>
 </ion-card>
