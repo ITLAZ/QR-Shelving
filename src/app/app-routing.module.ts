@@ -16,8 +16,8 @@ const routes: Routes = [
     loadChildren: () => import('./pages/product-scan/product-scan.module').then( m => m.ProductScanPageModule)
   },
   {
-    path: 'qr-shelve',
-    loadChildren: () => import('./pages/shelve-scan/shelve-scan.module').then( m => m.ShelveScanPageModule)
+    path: 'shelves',
+    loadChildren: () => import('./pages/shelves/shelves.module').then( m => m.ShelvesPageModule)
   },
   {
     path: 'inventory',
@@ -26,6 +26,10 @@ const routes: Routes = [
   {
     path: 'add-product',
     loadChildren: () => import('./pages/add-product/add-product.module').then( m => m.AddProductPageModule)
+  },
+  {
+    path: 'add-shelf',
+    loadChildren: () => import('./pages/add-shelf/add-shelf.module').then( m => m.AddShelfPageModule)
   },
 ];
 

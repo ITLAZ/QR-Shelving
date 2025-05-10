@@ -1,0 +1,47 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Add Shelf</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Add Shelf</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <form>
+    <ion-item>
+      <ion-label position="floating">Code</ion-label>
+      <ion-input type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Description</ion-label>
+      <ion-input type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Location</ion-label>
+      <ion-input type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Capacity</ion-label>
+      <ion-input type="number" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Size</ion-label>
+      <ion-select placeholder="Select Size" required>
+        <ion-select-option value="Large">Large</ion-select-option>
+        <ion-select-option value="Small">Small</ion-select-option>
+        <ion-select-option value="Medium">Medium</ion-select-option>
+        <ion-select-option value="Exhibit">Exhibit</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button expand="block" type="submit">Add Shelf</ion-button>
+  </form>
+</ion-content>

@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ShelveScanPageRoutingModule } from './shelve-scan-routing.module';
+import { ShelvesPageRoutingModule } from './shelves-routing.module';
 
-import { ShelveScanPage } from './shelve-scan.page';
+import { ShelvesPage } from './shelves.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ShelveScanPageRoutingModule
+    ShelvesPageRoutingModule
   ],
-  declarations: [ShelveScanPage]
+  declarations: [ShelvesPage]
 })
-export class ShelveScanPageModule {}
+export class ShelvesPageModule {}
