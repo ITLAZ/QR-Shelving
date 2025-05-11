@@ -21,6 +21,7 @@ export class AddProductPage implements OnInit {
 
   ngOnInit() {
     this.productForm = this.fb.group({
+      sku: ['', Validators.required],
       name: ['', Validators.required],
       price: ['', [Validators.required, Validators.min(0)]],
       expires: ['', Validators.required],
@@ -28,6 +29,11 @@ export class AddProductPage implements OnInit {
       lot: ['', Validators.required],
       cost: ['', [Validators.required, Validators.min(0)]],
     });
+  }
+
+  async cleanForm() {
+    this.productForm.reset();
+    this.qrData = null;
   }
 
   async addProduct() {
@@ -46,6 +52,7 @@ export class AddProductPage implements OnInit {
             ...product,
             qrCode: qrBase64,
             createdAt: now.toISOString(),
+            shelf: false,
           };
 
           try {
