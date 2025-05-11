@@ -11,41 +11,51 @@
     </ion-card-header>
 
     <ion-card-content>
-      <ion-grid class="inventory-table">
-        <ion-row class="header-row">
-          <ion-col size="0.5"><strong>No.</strong></ion-col>
-          <ion-col size="1"><strong>Lote</strong></ion-col>
-          <ion-col size="2"><strong>Producto</strong></ion-col>
-          <ion-col size="1"><strong>Cantidad</strong></ion-col>
-          <ion-col size="1"><strong>Precio (Bs)</strong></ion-col>
-          <ion-col size="2"><strong>Fecha de Creacion</strong></ion-col>
-          <ion-col size="2"><strong>Vencimiento</strong></ion-col>
-          <ion-col size="1.1"><strong>QR</strong></ion-col>
-          <ion-col size="1.2"><strong>Eliminar</strong></ion-col>
-        </ion-row>
+      <div class="responsive-table-wrapper">
+        <ion-grid class="inventory-table">
+          <ion-row class="header-row">
+            <ion-col size="0.5"><strong>No.</strong></ion-col>
+            <ion-col size="1"><strong>Sku</strong></ion-col>
+            <ion-col size="1.5"><strong>Lote</strong></ion-col>
+            <ion-col size="2"><strong>Producto</strong></ion-col>
+            <ion-col size="1"><strong>Cantidad</strong></ion-col>
+            <ion-col size="1"><strong>Precio (Bs)</strong></ion-col>
+            <ion-col size="1.5"><strong>Fecha de Creacion</strong></ion-col>
+            <ion-col size="1.5"><strong>Vencimiento</strong></ion-col>
+            <ion-col size="1"><strong>QR</strong></ion-col>
+            <ion-col size="1.2"><strong>Eliminar</strong></ion-col>
+          </ion-row>
 
-        <ion-row *ngFor="let element of displayedData; let i = index" class="data-row">
-          <ion-col size="0.5">{{ i + 1 + (currentPage * elementsPerPage) }}</ion-col>
-          <ion-col size="1">{{ element.lot }}</ion-col>
-          <ion-col size="2">{{ element.name }}</ion-col>
-          <ion-col size="1">{{ element.quantity }}</ion-col>
-          <ion-col size="1">{{ element.cost }} Bs</ion-col>
-          <ion-col size="2">{{ element.createdAt | date: 'yyyy-MM-dd' }}</ion-col>
-          <ion-col size="2">{{ element.expires | date: 'yyyy-MM-dd' }}</ion-col>
-          <ion-col size="1.1">
-            <ion-button size="medium" fill="clear" class="qr-button" (click)="openQRModal(element)">
-              <ion-icon slot="icon-only" name="qr-code-outline"></ion-icon>
-            </ion-button>
-          </ion-col>
-          <ion-col size="1.2">
-            <ion-button color="danger" size="small" fill="solid" (click)="deleteItem(element.id)">
-              <ion-icon slot="start" name="trash-outline"></ion-icon>
-              Eliminar
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
+          <ion-row *ngFor="let element of displayedData; let i = index" class="data-row">
+            <ion-col size="0.5">{{ i + 1 + (currentPage * elementsPerPage) }}</ion-col>
+            <ion-col size="1">{{ element.sku }}</ion-col>
+            <ion-col size="1.5">{{ element.lot }}</ion-col>
+            <ion-col size="2">{{ element.name }}</ion-col>
+            <ion-col size="1">{{ element.quantity }}</ion-col>
+            <ion-col size="1">{{ element.cost }} Bs</ion-col>
+            <ion-col size="1.5">{{ element.createdAt | date: 'yyyy-MM-dd' }}</ion-col>
+            <ion-col size="1.5">
+              <div class="expiration-cell">
+                <ion-icon
+                  [name]="getExpirationStatus(element.expires).icon"
+                  [ngClass]="getExpirationStatus(element.expires).status"
+                ></ion-icon>
+                {{ element.expires | date: 'yyyy-MM-dd' }}
+              </div>
+            </ion-col>
+            <ion-col size="1">
+              <ion-button size="medium" fill="clear" class="qr-button" (click)="openQRModal(element)">
+                <ion-icon slot="icon-only" name="qr-code-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+            <ion-col size="1.2">
+              <ion-button size="medium" fill="clear" class="icon-button danger" (click)="deleteItem(element.id)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
       <div class="pagination-buttons">
         <ion-button (click)="prevPage()" [disabled]="currentPage === 0" fill="outline">Anterior</ion-button>
         <ion-label> Página {{ currentPage + 1 }} de {{ totalPages }} </ion-label>
