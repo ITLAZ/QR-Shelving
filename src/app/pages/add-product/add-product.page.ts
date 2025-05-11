@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService } from 'src/app/services/database.service';
 import { AlertController } from '@ionic/angular';
+import { Product } from 'src/app/models/product.model';
 
 @Component({
   selector: 'app-add-product',
@@ -21,18 +22,24 @@ export class AddProductPage implements OnInit {
 
   ngOnInit() {
     this.productForm = this.fb.group({
+      sku: ['', Validators.required],
       name: ['', Validators.required],
-      price: ['', [Validators.required, Validators.min(0)]],
+      price: [0, [Validators.required, Validators.min(0)]],
       expires: ['', Validators.required],
-      quantity: ['', [Validators.required, Validators.min(0)]],
+      quantity: [0, [Validators.required, Validators.min(0)]],
       lot: ['', Validators.required],
-      cost: ['', [Validators.required, Validators.min(0)]],
+      cost: [0, [Validators.required, Validators.min(0)]],
     });
+  }
+
+  async cleanForm() {
+    this.productForm.reset();
+    this.qrData = null;
   }
 
   async addProduct() {
     if (this.productForm.valid) {
-      const product = this.productForm.value;
+      const product: Product = this.productForm.value;
       this.qrData = JSON.stringify(product);
 
       setTimeout(async () => {
@@ -42,10 +49,11 @@ export class AddProductPage implements OnInit {
           const qrBase64 = qrElement.toDataURL('image/png');
           const now = new Date();
 
-          const productWithQR = {
+          const productWithQR: Product = {
             ...product,
             qrCode: qrBase64,
             createdAt: now.toISOString(),
+            shelf: false,
           };
 
           try {
