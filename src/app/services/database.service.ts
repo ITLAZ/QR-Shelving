@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AngularFirestore, Query } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import { DocumentData } from 'firebase/firestore'; // Asegúrate de importar DocumentData
+import { Shelf } from '../models/shelf.model';
 
 @Injectable({
   providedIn: 'root'
@@ -77,6 +78,23 @@ export class DatabaseService {
       ).valueChanges({ idField: 'id' });
     });
   }
+
+  async getShelfByCode(code: string): Promise<Shelf> {
+    const doc = await this.firestore.collection('shelves').doc(code).ref.get();
+    return doc.data() as Shelf;
+  }
+  
+  async findShelfContainingProduct(sku: string): Promise<Shelf | null> {
+    const snapshot = await this.firestore.collection<Shelf>('shelves', ref =>
+      ref.where('content', 'array-contains', sku)
+    ).get().toPromise();
+  
+    return snapshot?.docs[0]?.data() || null;
+  }
+  
+  async updateShelf(code: string, data: Partial<Shelf>) {
+    return this.firestore.collection('shelves').doc(code).update(data);
+  }  
 
   // Consulta dinámica con múltiples filtros
   getCollectionByFilters(

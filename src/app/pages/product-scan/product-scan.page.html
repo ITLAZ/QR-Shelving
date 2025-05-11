@@ -1,23 +1,51 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>product-scan</ion-title>
+    <ion-title>Escaneo de Productos</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">product-scan</ion-title>
+      <ion-title size="large">Escaneo de Productos</ion-title>
     </ion-toolbar>
   </ion-header>
-  <app-qr-reader class="scanner" title="Escanear Producto" (scanSuccess)="handleScanSuccess($event)">
+
+  <app-qr-reader
+    class="scanner"
+    title="Escanear Producto o Estante"
+    (scanSuccess)="handleScanSuccess($event)">
   </app-qr-reader>
-  <ion-card *ngIf="parsedProduct">
+
+  <!-- ✅ Modo Reposición: estante escaneado primero -->
+  <ion-card *ngIf="currentShelf">
+    <ion-card-header>
+      <ion-card-title>Reposición en estante: {{ currentShelf.id }}</ion-card-title>
+      <ion-card-subtitle>Capacidad: {{ currentShelf.capacity }} | Ocupado: {{ currentShelf.contents.length }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list *ngIf="currentShelf.contents.length > 0">
+        <ion-item *ngFor="let product of currentShelf.contents">
+          <ion-label>
+            <h3>{{ product.name }}</h3>
+            <p>SKU: {{ product.sku }} | Cantidad: {{ product.quantity }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+      <ion-note color="medium" *ngIf="currentShelf.contents.length === 0">
+        Aún no se han añadido productos.
+      </ion-note>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- ✅ Modo Venta: producto escaneado primero -->
+  <ion-card *ngIf="parsedProduct && !currentShelf">
     <ion-card-header>
       <ion-card-title>{{ parsedProduct.name }}</ion-card-title>
       <ion-card-subtitle>Lote: {{ parsedProduct.lot | date: 'dd/MM/yyyy' }}</ion-card-subtitle>
     </ion-card-header>
-  
+
     <ion-card-content>
       <ion-list lines="none">
         <ion-item>
@@ -25,18 +53,18 @@
             <h3>Precio de Venta</h3>
             <p>$ {{ parsedProduct.price }}</p>
           </ion-label>
-          <ion-note slot="end" color="success">
-            Stock: {{ parsedProduct.quantity }}
+          <ion-note slot="end" color="danger">
+            -1 vendido
           </ion-note>
         </ion-item>
-  
+
         <ion-item>
           <ion-label>
             <h3>Costo</h3>
             <p>$ {{ parsedProduct.cost }}</p>
           </ion-label>
         </ion-item>
-  
+
         <ion-item>
           <ion-label>
             <h3>Fecha de Vencimiento</h3>
