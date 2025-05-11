@@ -1,3 +1,5 @@
+import { Product } from "./product.model";
+
 // shelf.model.ts
 export interface Shelf {
     code: string;
@@ -7,6 +9,7 @@ export interface Shelf {
     size: string;
     createdAt: string;
     qrCode: string;
-    content: string[]; // array de SKUs
+    content: Product[]; // array de SKUs
+    shelf: boolean;
   }
   

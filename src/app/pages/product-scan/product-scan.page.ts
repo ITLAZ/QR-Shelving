@@ -3,6 +3,7 @@ import { AlertController } from '@ionic/angular';
 
 import { Shelf } from 'src/app/models/shelf.model';
 import { Product } from 'src/app/models/product.model';
+import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
   selector: 'app-product-scan',
@@ -12,12 +13,14 @@ import { Product } from 'src/app/models/product.model';
 })
 export class ProductScanPage {
   scannedData: string[] = [];
-  currentShelf: any = null; // Estante en contexto (si se escanea primero)
-  parsedProduct: any = null; // Último producto escaneado y procesado
+  currentShelf: Shelf | null = null;
+  parsedProduct: Product | null = null;
+  shelves: Shelf[] = [];
 
-  shelves: Shelf[] = []; // Lista de estantes usando el modelo Shelf
-
-  constructor(private alertCtrl: AlertController) {}
+  constructor(
+    private alertCtrl: AlertController,
+    private databaseService: DatabaseService
+  ) {}
 
   async handleScanSuccess(data: string) {
     if (!this.scannedData.includes(data)) {
@@ -31,33 +34,39 @@ export class ProductScanPage {
       }
 
       if (parsed?.hasOwnProperty('capacity')) {
-        // Es un estante
-        this.currentShelf = this.getOrCreateShelf(parsed);
-        this.parsedProduct = parsed;
-        await this.showAlert(
-          'Estante escaneado',
-          `Se está reponiendo el estante: ${this.currentShelf.name}`
-        );
+        // Buscar el estante por código desde Firebase
+        this.currentShelf = await this.loadShelfFromFirestore(parsed.code);
+        if (this.currentShelf) {
+          await this.showAlert('Estante escaneado', `Se está reponiendo el estante: ${this.currentShelf.code}`);
+        } else {
+          await this.showAlert('No encontrado', 'Este estante no está registrado.');
+        }
       } else if (parsed?.hasOwnProperty('sku')) {
         this.parsedProduct = parsed;
-        // Es un producto
         if (this.currentShelf) {
           const added = this.addProductToShelf(parsed, this.currentShelf);
           if (added) {
             await this.showAlert('Producto añadido', `Se añadió ${parsed.name} al estante.`);
+            // Aquí puedes guardar la modificación si deseas
+            // await this.databaseService.updateFirestoreDocument('shelves', this.currentShelf.code, this.currentShelf);
+            if (added) {
+              await this.databaseService.updateFirestoreDocument('shelves', this.currentShelf.code, this.currentShelf);
+              await this.showAlert('Producto añadido', `Se añadió ${parsed.name} al estante.`);
+            }
           } else {
-            await this.showAlert(
-              'Estante lleno',
-              'No se puede añadir más productos, estante lleno.'
-            );
+            await this.showAlert('Estante lleno', 'No se puede añadir más productos, estante lleno.');
           }
         } else {
-          // Venta: buscar en todos los estantes
           const shelf = this.findShelfWithProduct(parsed.sku);
           if (shelf) {
             const removed = this.removeProductFromShelf(parsed.sku, shelf);
             if (removed) {
               await this.showAlert('Venta registrada', `Se vendió ${parsed.name}.`);
+              // await this.databaseService.updateFirestoreDocument('shelves', shelf.code, shelf);
+              if (removed) {
+                await this.databaseService.updateFirestoreDocument('shelves', shelf.code, shelf);
+                await this.showAlert('Venta registrada', `Se vendió ${parsed.name}.`);
+              }
             } else {
               await this.showAlert('Error', 'El producto no tiene stock.');
             }
@@ -71,18 +80,34 @@ export class ProductScanPage {
     }
   }
 
-  getOrCreateShelf(parsedShelf: any) {
-    let shelf = this.shelves.find((s) => s.code === parsedShelf.id);
-    if (!shelf) {
-      shelf = { ...parsedShelf, content: [] as Product[] };
-      if (shelf) {
+  async loadShelfFromFirestore(code: string): Promise<Shelf | null> {
+    try {
+      const snapshot = await this.databaseService.getFirestoreDocumentByField('shelves', 'code', code);
+      if (snapshot && snapshot.length > 0) {
+        const doc = snapshot[0];
+        const shelf = doc as Shelf;
+
+        // Asegurar que el campo content esté definido como array
+        if (!Array.isArray(shelf.content)) {
+          shelf.content = [];
+        }
+
+        // Opcional: guardar localmente
         this.shelves.push(shelf);
+        return shelf;
       }
+      return null;
+    } catch (error) {
+      console.error('Error al obtener el estante desde Firebase:', error);
+      return null;
     }
-    return shelf;
   }
 
-  addProductToShelf(product: any, shelf: any): boolean {
+  addProductToShelf(product: Product, shelf: Shelf): boolean {
+    if (!Array.isArray(shelf.content)) {
+      shelf.content = [];
+    }
+
     if (shelf.content.length < shelf.capacity) {
       shelf.content.push(product);
       return true;
@@ -90,24 +115,18 @@ export class ProductScanPage {
     return false;
   }
 
-  findShelfWithProduct(sku: string) {
-    // Asegúrate de que 'products' sea de tipo Product[]
-    const products: Product[] = []; // Tu lista de productos
-
-    // Filtrar o buscar usando tu función
-    const result = products.find((p: Product) => p.sku === sku);
+  findShelfWithProduct(sku: string): Shelf | undefined {
     return this.shelves.find((shelf) =>
-      Array.isArray(shelf.content) && (shelf.content as unknown[]).every(item => item && typeof item === 'object' && 'sku' in item) &&
       Array.isArray(shelf.content) &&
-      shelf.content.every(item => typeof item === 'object' && 'sku' in item) &&
       (shelf.content as Product[]).some((p: Product) => p.sku === sku)
     );
   }
 
-  removeProductFromShelf(sku: string, shelf: any): boolean {
-    const index = shelf.content.findIndex((p: { sku: string; name: string }) => p.sku === sku);
+  removeProductFromShelf(sku: string, shelf: Shelf): boolean {
+    if (!Array.isArray(shelf.content)) return false;
+    const index = shelf.content.findIndex((p: Product) => p.sku === sku);
     if (index !== -1) {
-      shelf.content.splice(index, 1); // Fixed the property name here
+      shelf.content.splice(index, 1);
       return true;
     }
     return false;

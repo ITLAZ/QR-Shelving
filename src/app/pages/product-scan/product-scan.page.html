@@ -20,20 +20,22 @@
   <!-- ✅ Modo Reposición: estante escaneado primero -->
   <ion-card *ngIf="currentShelf">
     <ion-card-header>
-      <ion-card-title>Reposición en estante: {{ currentShelf.id }}</ion-card-title>
-      <ion-card-subtitle>Capacidad: {{ currentShelf.capacity }} | Ocupado: {{ currentShelf.contents.length }}</ion-card-subtitle>
+      <ion-card-title>Reposición en estante: {{ currentShelf.code }}</ion-card-title>
+      <ion-card-subtitle>
+        Capacidad: {{ currentShelf.capacity }} | Ocupado: {{ currentShelf.content.length || 0 }}
+      </ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
-      <ion-list *ngIf="currentShelf.contents.length > 0">
-        <ion-item *ngFor="let product of currentShelf.contents">
+      <ion-list *ngIf="(currentShelf?.content ?? []).length > 0">
+        <ion-item *ngFor="let product of currentShelf?.content">
           <ion-label>
             <h3>{{ product.name }}</h3>
             <p>SKU: {{ product.sku }} | Cantidad: {{ product.quantity }}</p>
           </ion-label>
         </ion-item>
       </ion-list>
-      <ion-note color="medium" *ngIf="currentShelf.contents.length === 0">
+      <ion-note color="medium" *ngIf="currentShelf?.content?.length === 0">
         Aún no se han añadido productos.
       </ion-note>
     </ion-card-content>

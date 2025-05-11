@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService } from 'src/app/services/database.service';
 import { AlertController } from '@ionic/angular';
+import { Shelf } from 'src/app/models/shelf.model';
 
 @Component({
   selector: 'app-add-shelf',
@@ -24,40 +25,41 @@ export class AddShelfPage implements OnInit {
       code: ['', Validators.required],
       description: ['', Validators.required],
       location: ['', Validators.required],
-      capacity: ['', [Validators.required, Validators.min(1)]],
+      capacity: [1, [Validators.required, Validators.min(1)]],
       size: ['', Validators.required],
     });
   }
 
   async addShelf() {
     if (this.shelfForm.valid) {
-      const shelf = this.shelfForm.value;
-      this.qrData = JSON.stringify(shelf);
-  
+      const shelfBase = this.shelfForm.value;
+      this.qrData = JSON.stringify(shelfBase);
+
       setTimeout(async () => {
         const qrElement = document.querySelector('qrcode canvas') as HTMLCanvasElement;
-  
+
         if (qrElement) {
           const qrBase64 = qrElement.toDataURL('image/png');
           const now = new Date();
-  
-          const shelfWithQR = {
-            ...shelf,
+
+          const shelfWithQR: Shelf = {
+            ...shelfBase,
             qrCode: qrBase64,
             createdAt: now.toISOString(),
-            contents: [], // Inicializa el arreglo vacío de productos
+            content: [],          // Inicialmente vacío
+            shelf: true           // Marcado como estante disponible
           };
-  
+
           try {
             await this.databaseService.addFirestoreDocument('shelves', shelfWithQR);
-  
+
             const alert = await this.alertController.create({
               header: 'Éxito',
               message: 'Estante agregado correctamente.',
               buttons: ['OK'],
             });
             await alert.present();
-  
+
             this.shelfForm.reset();
             this.qrData = null;
           } catch (error) {
@@ -69,7 +71,6 @@ export class AddShelfPage implements OnInit {
       }, 500);
     }
   }
-  
 
   downloadQR() {
     const qrElement = document.querySelector('qrcode canvas') as HTMLCanvasElement;
