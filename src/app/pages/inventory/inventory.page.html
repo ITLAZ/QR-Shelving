@@ -14,30 +14,27 @@
       <ion-grid class="inventory-table">
         <ion-row class="header-row">
           <ion-col size="0.5"><strong>No.</strong></ion-col>
-          <ion-col size="4"><strong>Producto</strong></ion-col>
+          <ion-col size="1"><strong>Lote</strong></ion-col>
+          <ion-col size="2"><strong>Producto</strong></ion-col>
           <ion-col size="1"><strong>Cantidad</strong></ion-col>
-          <ion-col size="2"><strong>Precio (Bs)</strong></ion-col>
+          <ion-col size="1"><strong>Precio (Bs)</strong></ion-col>
+          <ion-col size="2"><strong>Fecha de Creacion</strong></ion-col>
           <ion-col size="2"><strong>Vencimiento</strong></ion-col>
           <ion-col size="1.1"><strong>QR</strong></ion-col>
-          <ion-col size="1.2"><strong>Editar</strong></ion-col>
           <ion-col size="1.2"><strong>Eliminar</strong></ion-col>
         </ion-row>
 
         <ion-row *ngFor="let element of displayedData; let i = index" class="data-row">
           <ion-col size="0.5">{{ i + 1 + (currentPage * elementsPerPage) }}</ion-col>
-          <ion-col size="4">{{ element.Producto }}</ion-col>
-          <ion-col size="1">{{ element.Cantidad }}</ion-col>
-          <ion-col size="2">{{ element.Precio }} Bs</ion-col>
-          <ion-col size="2">{{ element['Fecha de vencimiento'] }}</ion-col>
+          <ion-col size="1">{{ element.lot }}</ion-col>
+          <ion-col size="2">{{ element.name }}</ion-col>
+          <ion-col size="1">{{ element.quantity }}</ion-col>
+          <ion-col size="1">{{ element.cost }} Bs</ion-col>
+          <ion-col size="2">{{ element.createdAt | date: 'yyyy-MM-dd' }}</ion-col>
+          <ion-col size="2">{{ element.expires | date: 'yyyy-MM-dd' }}</ion-col>
           <ion-col size="1.1">
-            <ion-button color="medium" size="small" (click)="openQRModal(element)">
+            <ion-button size="medium" fill="clear" class="qr-button" (click)="openQRModal(element)">
               <ion-icon slot="icon-only" name="qr-code-outline"></ion-icon>
-            </ion-button>
-          </ion-col>
-          <ion-col size="1.2">
-            <ion-button color="primary" size="small" fill="solid" (click)="editItem(element)">
-              <ion-icon slot="start" name="create-outline"></ion-icon>
-              Editar
             </ion-button>
           </ion-col>
           <ion-col size="1.2">

@@ -72,7 +72,7 @@ export class InventoryPage {
   }
 
   deleteItem(id: string) {
-    this.dbService.deleteFireStoreDocument('Productos', id).then(() => {
+    this.dbService.deleteFireStoreDocument('Products', id).then(() => {
       this.fullData = this.fullData.filter((item) => item.id !== id);
       this.totalPages = Math.ceil(this.fullData.length / this.elementsPerPage);
       this.updateDisplayedData();
