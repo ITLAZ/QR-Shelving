@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService } from 'src/app/services/database.service';
 import { AlertController } from '@ionic/angular';
 import { Product } from 'src/app/models/product.model';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-add-product',
@@ -14,7 +16,9 @@ export class AddProductPage implements OnInit {
   productForm!: FormGroup;
   qrData: string | null = null;
 
+
   constructor(
+    private location: Location,
     private fb: FormBuilder,
     private databaseService: DatabaseService,
     private alertController: AlertController
@@ -94,5 +98,8 @@ export class AddProductPage implements OnInit {
     } else {
       console.error('No se encontró el elemento QR para descargar o el nombre del producto no está definido.');
     }
+  }
+  goBack() {
+    this.location.back();
   }
 }
