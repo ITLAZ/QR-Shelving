@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { DatabaseService } from 'src/app/services/database.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-inventory',
@@ -15,7 +16,7 @@ export class InventoryPage {
   fullData: any[] = [];
   inventario: any[] = [];
 
-  constructor(private dbService: DatabaseService) {
+  constructor(private dbService: DatabaseService, private location: Location) {
     this.dbService.fetchFirestoreCollection('products').subscribe((data) => {
       this.fullData = data;
       this.totalPages = Math.ceil(this.fullData.length / this.elementsPerPage);
@@ -91,5 +92,8 @@ export class InventoryPage {
     } else {
       return { icon: 'checkmark-circle-outline', status: 'valid' };
     }
+  }
+   goBack() {
+    this.location.back();
   }
 }
