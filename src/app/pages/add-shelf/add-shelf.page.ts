@@ -59,7 +59,7 @@ export class AddShelfPage implements OnInit {
               'shelves',
               shelfWithQR.code
             );
-            if (exists) {
+            if (!exists) {
               await this.databaseService.addFirestoreDocumentID(
                 'shelves',
                 shelfWithQR.code,
