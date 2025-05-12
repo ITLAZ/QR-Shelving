@@ -202,4 +202,9 @@ export class ProductScanPage {
   goBack() {
     this.location.back();
   }
+
+  exitReplenishmentMode() {
+    this.currentShelf = null;
+    this.showAlert('Modo reposición desactivado', 'Puedes volver a escanear para vender.');
+  }
 }

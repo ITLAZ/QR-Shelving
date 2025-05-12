@@ -1,4 +1,3 @@
-
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
@@ -21,9 +20,7 @@
     Escanear Producto o Estante
   </div>
 
-  <app-qr-reader
-    class="scanner"
-    (scanSuccess)="handleScanSuccess($event)">
+  <app-qr-reader class="scanner" (scanSuccess)="handleScanSuccess($event)">
   </app-qr-reader>
   <!--<app-qr-reader
     class="scanner"
@@ -45,7 +42,7 @@
         <ion-item *ngFor="let product of currentShelf?.content">
           <ion-label>
             <h3>{{ product.name }}</h3>
-            <p>SKU: {{ product.sku }} | Cantidad: {{ product.quantity }}</p>
+            <p>SKU: {{ product.sku }} <!-- | Cantidad: {{ product.quantity }} --></p>
           </ion-label>
         </ion-item>
       </ion-list>
@@ -90,4 +87,7 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
+  <ion-button *ngIf="currentShelf" expand="full" color="danger" (click)="exitReplenishmentMode()">
+    Salir de modo reposición
+  </ion-button>
 </ion-content>
