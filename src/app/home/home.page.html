@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      ALEDION
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,23 +13,48 @@
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
-    <div id="actions-menu">
-      <ion-button id="scan-button" expand="full" color="primary" routerLink="/qr-scan">
-        Escanear codigo QR
+  <ion-grid>
+  <ion-row>
+    <ion-col size="6">
+      <ion-button expand="block" class="home-button" routerLink="/qr-scan">
+        <div class="icon-wrapper">
+          <ion-icon name="qr-code-outline"></ion-icon>
+          <span>Escanear</span>
+        </div>
       </ion-button>
-      <ion-button id="shelve-button" expand="full" color="secondary" routerLink="/shelves">
-        Lista de Estantes
+    </ion-col>
+    <ion-col size="6">
+      <ion-button expand="block" class="home-button" routerLink="/shelves">
+        <div class="icon-wrapper">
+          <ion-icon name="list-outline"></ion-icon>
+          <span>Estantes</span>
+        </div>
       </ion-button>
-      <ion-button id="inventory-button" expand="full" color="tertiary" routerLink="/inventory">
-        Inventario de Productos
+    </ion-col>
+    <ion-col size="6">
+      <ion-button expand="block" class="home-button" routerLink="/inventory">
+        <div class="icon-wrapper">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>Inventario</span>
+        </div>
       </ion-button>
-      <ion-button id="add-product" expand="full" color="success" routerLink="/add-product">
-        Añadir Producto
+    </ion-col>
+    <ion-col size="6">
+      <ion-button expand="block" class="home-button" routerLink="/add-product">
+        <div class="icon-wrapper">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          <span>Añadir Producto</span>
+        </div>
       </ion-button>
-      <ion-button id="add-shelf" expand="full" color="warning" routerLink="/add-shelf">
-        Añadir Estante
+    </ion-col>
+    <ion-col size="6">
+      <ion-button expand="block" class="home-button" routerLink="/add-shelf">
+        <div class="icon-wrapper">
+          <ion-icon name="duplicate-outline"></ion-icon>
+          <span>Añadir Estante</span>
+        </div>
       </ion-button>
-    </div>
-  </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
 </ion-content>
