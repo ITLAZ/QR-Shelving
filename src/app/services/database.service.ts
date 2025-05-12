@@ -69,7 +69,7 @@ export class DatabaseService {
       return this.firestore
         .collection(collection)
         .doc(uid)
-        .valueChanges({ idField: 'id' });
+        .valueChanges({ idField: 'code' });
     });
   }
 
@@ -138,17 +138,25 @@ export class DatabaseService {
 
   async findShelfContainingProduct(sku: string): Promise<Shelf | null> {
     return runInInjectionContext(this.injector, async () => {
-      const firestoreInstance = getFirestore();
-      const shelvesRef = collection(firestoreInstance, 'shelves');
-      const snapshot = await getDocs(shelvesRef);
+      const snapshot = await this.firestore
+        .collection<Shelf>('shelves')
+        .get()
+        .toPromise();
 
-      for (const docSnap of snapshot.docs) {
-        const shelf = docSnap.data() as Shelf;
-        const containsProduct = shelf.content?.some(
-          (p: Product) => p.sku === sku
+      for (const doc of snapshot?.docs || []) {
+        const shelf = doc.data();
+        console.log('contenido:', shelf.content);
+        const containsProduct = (shelf.content || []).some(
+          (p: Product) => p?.sku === sku
         );
+
+        console.log(
+          `Revisando estante ${shelf.code}, contiene producto:`,
+          containsProduct
+        );
+
         if (containsProduct) {
-          return { ...shelf, code: docSnap.id }; // Agregamos `code` con el ID si no existe
+          return shelf;
         }
       }
 

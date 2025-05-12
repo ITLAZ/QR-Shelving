@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 
+import { firstValueFrom } from 'rxjs';
+
 import { Shelf } from 'src/app/models/shelf.model';
 import { Product } from 'src/app/models/product.model';
 import { DatabaseService } from 'src/app/services/database.service';
@@ -77,7 +79,8 @@ export class ProductScanPage {
             );
           }
         } else {
-          const shelf = this.findShelfWithProduct(parsed.sku);
+          const shelf = await this.findShelfWithProductFromFirestore(parsed.sku);
+          console.log('Shelf found:', shelf);       
           if (shelf) {
             const removed = this.removeProductFromShelf(parsed.sku, shelf);
             if (removed) {
@@ -147,12 +150,32 @@ export class ProductScanPage {
     return false;
   }
 
-  findShelfWithProduct(sku: string): Shelf | undefined {
-    return this.shelves.find(
-      (shelf) =>
-        Array.isArray(shelf.content) &&
-        (shelf.content as Product[]).some((p: Product) => p.sku === sku)
-    );
+  async findShelfWithProductFromFirestore(sku: string): Promise<Shelf | null> {
+    try {
+      console.log('Buscando estantes en Firestore para SKU:', sku);
+      const allShelves = await firstValueFrom(this.databaseService.fetchFirestoreCollection('shelves')) as Shelf[];
+      console.log('Estantes obtenidos:', allShelves);
+  
+      for (const shelf of allShelves) {
+        console.log(`Revisando estante ${shelf.code}`, shelf.content);
+        if (!Array.isArray(shelf.content)) continue;
+  
+        const found = shelf.content.some((p: Product) => p.sku === sku);
+        if (found) {
+          console.log(`Producto encontrado en estante ${shelf.code}`);
+          const alreadyLoaded = this.shelves.find((s) => s.code === shelf.code);
+          if (!alreadyLoaded) {
+            this.shelves.push(shelf);
+          }
+          return shelf;
+        }
+      }
+      console.log('Producto no encontrado en ningún estante.');
+      return null;
+    } catch (err) {
+      console.error('Error buscando estantes desde Firestore:', err);
+      return null;
+    }
   }
 
   removeProductFromShelf(sku: string, shelf: Shelf): boolean {
