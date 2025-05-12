@@ -78,4 +78,18 @@ export class InventoryPage {
       this.updateDisplayedData();
     });
   }
+  getExpirationStatus(dateString: string): { icon: string, status: string } {
+    const today = new Date();
+    const date = new Date(dateString);
+    const twoWeeksFromNow = new Date();
+    twoWeeksFromNow.setDate(today.getDate() + 14);
+
+    if (date < today) {
+      return { icon: 'alert-circle-outline', status: 'expired' };
+    } else if (date <= twoWeeksFromNow) {
+      return { icon: 'warning-outline', status: 'warning' };
+    } else {
+      return { icon: 'checkmark-circle-outline', status: 'valid' };
+    }
+  }
 }

@@ -1,54 +1,77 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Add Shelf</ion-title>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="goBack()" class="back-button">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Add Shelf</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <div class="form-container">
+    <h2 class="form-title">Añadir Estante</h2>
 
-  <form [formGroup]="shelfForm" (ngSubmit)="addShelf()">
-    <ion-item>
-      <ion-label position="floating">Code</ion-label>
-      <ion-input formControlName="code" type="text" required></ion-input>
-    </ion-item>
+    <form [formGroup]="shelfForm" (ngSubmit)="addShelf()" class="ion-padding">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Código</ion-label>
+              <ion-input formControlName="code" required></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Descripción</ion-label>
+              <ion-input formControlName="description" required></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
 
-    <ion-item>
-      <ion-label position="floating">Description</ion-label>
-      <ion-input formControlName="description" type="text" required></ion-input>
-    </ion-item>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Ubicación</ion-label>
+              <ion-input formControlName="location" required></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Capacidad</ion-label>
+              <ion-input type="number" formControlName="capacity" required></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
 
-    <ion-item>
-      <ion-label position="floating">Location</ion-label>
-      <ion-input formControlName="location" type="text" required></ion-input>
-    </ion-item>
+        <ion-row>
+          <ion-col size="12">
+            <ion-item>
+              <ion-label>Dimensión</ion-label>
+              <ion-select formControlName="size" placeholder="Seleccionar tamaño" required>
+                <ion-select-option value="Grande">Grande</ion-select-option>
+                <ion-select-option value="Mediano">Mediano</ion-select-option>
+                <ion-select-option value="Pequeño">Pequeño</ion-select-option>
+                <ion-select-option value="Exhibición">Exhibición</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
 
-    <ion-item>
-      <ion-label position="floating">Capacity</ion-label>
-      <ion-input formControlName="capacity" type="number" required></ion-input>
-    </ion-item>
+        <ion-row class="ion-padding-top">
+          <ion-col size="12" size-md="6">
+            <ion-button expand="block" color="success" type="submit" [disabled]="shelfForm.invalid">
+              Agregar Estante
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
 
-    <ion-item>
-      <ion-label>Size</ion-label>
-      <ion-select formControlName="size" placeholder="Select Size" required>
-        <ion-select-option value="Large">Large</ion-select-option>
-        <ion-select-option value="Small">Small</ion-select-option>
-        <ion-select-option value="Medium">Medium</ion-select-option>
-        <ion-select-option value="Exhibit">Exhibit</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-button expand="block" type="submit" [disabled]="shelfForm.invalid">
-      Add Shelf
-    </ion-button>
-  </form>
-
-  <div *ngIf="qrData" class="ion-text-center" style="margin-top: 20px;">
-    <qrcode [qrdata]="qrData" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
-    <ion-button expand="block" (click)="downloadQR()">Download QR</ion-button>
+    <div *ngIf="qrData" class="ion-text-center" style="margin-top: 20px;">
+      <h2>QR generado:</h2>
+      <qrcode [qrdata]="qrData" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
+      <ion-button expand="block" (click)="downloadQR()">Descargar QR</ion-button>
+    </div>
   </div>
 </ion-content>

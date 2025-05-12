@@ -1,63 +1,112 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>add-product</ion-title>
+    <ion-title>Añadir Producto</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding scroll-content" [fullscreen]="false">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">add-product</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="form-wrapper">
+    <div class="form-header">
+      <h2>Añadir Producto</h2>
+    </div>
 
-  <form [formGroup]="productForm" (ngSubmit)="addProduct()">
-    <ion-item>
-      <ion-label position="floating">SKU</ion-label>
-      <ion-input formControlName="sku" required></ion-input>
-    </ion-item>
+    <form [formGroup]="productForm" (ngSubmit)="addProduct()">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">SKU</ion-label>
+              <ion-input formControlName="sku" required></ion-input>
+            </ion-item>
+          </ion-col>
 
-    <ion-item>
-      <ion-label position="floating">Nombre del Producto</ion-label>
-      <ion-input formControlName="name" required></ion-input>
-    </ion-item>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Nombre del Producto</ion-label>
+              <ion-input formControlName="name" required></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
 
-    <ion-item>
-      <ion-label position="floating">Lote</ion-label>
-      <ion-datetime display-format="DD/MM/YYYY" presentation="date" formControlName="lot" required></ion-datetime>
-    </ion-item>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="stacked">Lote</ion-label>
+              <ion-datetime
+                presentation="date"
+                formControlName="lot"
+                required
+              ></ion-datetime>
+            </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">Fecha de Vencimiento</ion-label>
-      <ion-datetime display-format="DD/MM/YYYY" presentation="date" formControlName="expires" required></ion-datetime>
-    </ion-item>
+            <p class="date-preview">
+              Fecha lote: {{ productForm.value.lot | date: 'yyyy-MM-dd' }}
+            </p>
+          </ion-col>
 
-    <ion-item>
-      <ion-label position="floating">Cantidad</ion-label>
-      <ion-input type="number" formControlName="quantity" required></ion-input>
-    </ion-item>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="stacked">Fecha de Vencimiento</ion-label>
+              <ion-datetime
+                presentation="date"
+                formControlName="expires"
+                required
+              ></ion-datetime>
+            </ion-item>
+            <p class="date-preview">
+              Vence: {{ productForm.value.expires | date: 'yyyy-MM-dd' }}
+            </p>
+          </ion-col>
+        </ion-row>
 
-    <ion-item>
-      <ion-label position="floating">Precio Unitario (Bs)</ion-label>
-      <ion-input type="number" formControlName="price" required></ion-input>
-    </ion-item>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Cantidad</ion-label>
+              <ion-input
+                type="number"
+                formControlName="quantity"
+                required
+              ></ion-input>
+            </ion-item>
+          </ion-col>
 
-    <ion-item>
-      <ion-label position="floating">Costo (Bs)</ion-label>
-      <ion-input type="number" formControlName="cost" required></ion-input>
-    </ion-item>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Precio Unitario (Bs)</ion-label>
+              <ion-input
+                type="number"
+                formControlName="price"
+                required
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
 
-    <ion-button expand="block" type="submit" [disabled]="productForm.invalid">Agregar Producto</ion-button>
-    <ion-button expand="block" type="button" (click)="cleanForm()">Limpiar Formulario</ion-button>
-  </form>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Costo (Bs)</ion-label>
+              <ion-input
+                type="number"
+                formControlName="cost"
+                required
+              ></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
 
-  <div *ngIf="qrData" class="ion-text-center" style="margin-top: 20px;">
-    <h2>QR generado:</h2>
-    <qrcode [qrdata]="qrData" [width]="200"></qrcode>
-  </div>
-
-  <div *ngIf="qrData">
-    <qrcode [qrdata]="qrData" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
-    <ion-button expand="full" (click)="downloadQR()">Descargar QR</ion-button>
+        <ion-row class="button-row">
+          <ion-col size="12" size-md="6">
+            <ion-button expand="block" color="medium" (click)="cleanForm()">Limpiar</ion-button>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-button expand="block" color="success" type="submit" [disabled]="productForm.invalid">
+              Agregar Producto
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
   </div>
 </ion-content>
