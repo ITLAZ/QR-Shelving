@@ -1,5 +1,11 @@
+
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button class="back-button" (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>Escaneo de Productos</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -11,13 +17,21 @@
     </ion-toolbar>
   </ion-header>
 
+  <div class="scan-title ion-text-center ion-padding">
+    Escanear Producto o Estante
+  </div>
+
   <app-qr-reader
+    class="scanner"
+    (scanSuccess)="handleScanSuccess($event)">
+  </app-qr-reader>
+  <!--<app-qr-reader
     class="scanner"
     title="Escanear Producto o Estante"
     (scanSuccess)="handleScanSuccess($event)">
   </app-qr-reader>
 
-  <!-- ✅ Modo Reposición: estante escaneado primero -->
+   -->
   <ion-card *ngIf="currentShelf">
     <ion-card-header>
       <ion-card-title>Reposición en estante: {{ currentShelf.code }}</ion-card-title>
