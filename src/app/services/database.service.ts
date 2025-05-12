@@ -1,6 +1,14 @@
 import { Injectable, Injector, runInInjectionContext } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  getFirestore,
+} from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Shelf } from '../models/shelf.model';
 import { Product } from '../models/product.model';
@@ -31,6 +39,19 @@ export class DatabaseService {
     });
   }
 
+  addFirestoreDocumentID(
+    collectionName: string,
+    docId: string,
+    collectionData: any
+  ) {
+    return runInInjectionContext(this.injector, () => {
+      return this.firestore
+        .collection(collectionName)
+        .doc(docId)
+        .set(collectionData);
+    });
+  }
+
   updateFireStoreDocument(collection: string, uid: string, data: any) {
     return runInInjectionContext(this.injector, () => {
       return this.firestore.collection(collection).doc(uid).update(data);
@@ -49,6 +70,40 @@ export class DatabaseService {
         .collection(collection)
         .doc(uid)
         .valueChanges({ idField: 'id' });
+    });
+  }
+
+  getShelfByCode(code: string): Promise<Shelf | null> {
+    return runInInjectionContext(this.injector, async () => {
+      const firestoreInstance = getFirestore();
+      const docRef = doc(firestoreInstance, 'shelves', code);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const shelfData = docSnap.data() as Shelf;
+        return { ...shelfData, code: docSnap.id }; // Agregamos `code` con el ID si no existe
+      } else {
+        return null;
+      }
+    });
+  }
+
+  async updateShelf(code: string, data: Partial<Shelf>) {
+    return runInInjectionContext(this.injector, async () => {
+      const firestoreInstance = getFirestore();
+      const docRef = doc(firestoreInstance, 'shelves', code);
+      await updateDoc(docRef, data);
+    });
+  }
+
+  async checkDocumentExists(
+    collectionName: string,
+    docId: string
+  ): Promise<boolean> {
+    return runInInjectionContext(this.injector, async () => {
+      const firestoreInstance = getFirestore();
+      const docRef = doc(firestoreInstance, collectionName, docId);
+      const docSnap = await getDoc(docRef);
+      return docSnap.exists();
     });
   }
 
@@ -81,48 +136,24 @@ export class DatabaseService {
     });
   }
 
-  // ✅ Recuperar un estante por su código (buscando el documento que tenga el campo code igual)
-  async getShelfByCode(code: string): Promise<Shelf> {
-    const snapshot = await this.firestore
-      .collection<Shelf>('shelves', (ref) => ref.where('code', '==', code))
-      .get()
-      .toPromise();
-
-    const doc = snapshot?.docs[0];
-    return doc?.data() as Shelf;
-  }
-
-  // ⚠️ Buscar un estante que contenga un producto con cierto SKU
   async findShelfContainingProduct(sku: string): Promise<Shelf | null> {
-    const snapshot = await this.firestore
-      .collection<Shelf>('shelves')
-      .get()
-      .toPromise();
+    return runInInjectionContext(this.injector, async () => {
+      const firestoreInstance = getFirestore();
+      const shelvesRef = collection(firestoreInstance, 'shelves');
+      const snapshot = await getDocs(shelvesRef);
 
-    for (const doc of snapshot?.docs || []) {
-      const shelf = doc.data();
-      const containsProduct = shelf.content?.some(
-        (p: Product) => p.sku === sku
-      );
-      if (containsProduct) {
-        return shelf;
+      for (const docSnap of snapshot.docs) {
+        const shelf = docSnap.data() as Shelf;
+        const containsProduct = shelf.content?.some(
+          (p: Product) => p.sku === sku
+        );
+        if (containsProduct) {
+          return { ...shelf, code: docSnap.id }; // Agregamos `code` con el ID si no existe
+        }
       }
-    }
 
-    return null;
-  }
-
-  // ✅ Actualizar un estante usando su código (no el ID del documento)
-  async updateShelf(code: string, data: Partial<Shelf>) {
-    const snapshot = await this.firestore
-      .collection<Shelf>('shelves', (ref) => ref.where('code', '==', code))
-      .get()
-      .toPromise();
-
-    const docId = snapshot?.docs[0]?.id;
-    if (!docId) throw new Error(`No se encontró estante con código ${code}`);
-
-    return this.firestore.collection('shelves').doc(docId).update(data);
+      return null;
+    });
   }
 
   updateFirestoreDocument(
@@ -137,17 +168,15 @@ export class DatabaseService {
         .set(data, { merge: true });
     });
   }
-  getFirestoreDocumentByField(
-    collectionName: string,
-    field: string,
-    value: any
-  ): Promise<any[]> {
+  async getFirestoreDocumentID(
+    collection: string,
+    docId: string
+  ): Promise<any | null> {
     return runInInjectionContext(this.injector, async () => {
-      const snapshot = await this.firestore
-        .collection(collectionName, (ref) => ref.where(field, '==', value))
-        .get()
-        .toPromise();
-      return snapshot?.docs.map((doc) => doc.data()) || [];
+      const firestoreInstance = getFirestore();
+      const docRef = doc(firestoreInstance, collection, docId);
+      const snapshot = await getDoc(docRef);
+      return snapshot.exists() ? snapshot.data() : null;
     });
   }
 

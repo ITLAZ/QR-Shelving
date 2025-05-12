@@ -38,7 +38,9 @@ export class AddShelfPage implements OnInit {
       this.qrData = JSON.stringify(shelfBase);
 
       setTimeout(async () => {
-        const qrElement = document.querySelector('qrcode canvas') as HTMLCanvasElement;
+        const qrElement = document.querySelector(
+          'qrcode canvas'
+        ) as HTMLCanvasElement;
 
         if (qrElement) {
           const qrBase64 = qrElement.toDataURL('image/png');
@@ -48,22 +50,40 @@ export class AddShelfPage implements OnInit {
             ...shelfBase,
             qrCode: qrBase64,
             createdAt: now.toISOString(),
-            content: [],          // Inicialmente vacío
-            shelf: true           // Marcado como estante disponible
+            content: [], // Inicialmente vacío
+            shelf: true, // Marcado como estante disponible
           };
 
           try {
-            await this.databaseService.addFirestoreDocument('shelves', shelfWithQR);
+            const exists = await this.databaseService.checkDocumentExists(
+              'shelves',
+              shelfWithQR.code
+            );
+            if (exists) {
+              await this.databaseService.addFirestoreDocumentID(
+                'shelves',
+                shelfWithQR.code,
+                shelfWithQR
+              );
 
-            const alert = await this.alertController.create({
-              header: 'Éxito',
-              message: 'Estante agregado correctamente.',
-              buttons: ['OK'],
-            });
-            await alert.present();
+              const alert = await this.alertController.create({
+                header: 'Éxito',
+                message: 'Estante agregado correctamente.',
+                buttons: ['OK'],
+              });
+              await alert.present();
 
-            this.shelfForm.reset();
-            this.qrData = null;
+              this.shelfForm.reset();
+              this.qrData = null;
+            } else {
+              const alert = await this.alertController.create({
+                header: 'Error',
+                message:
+                  'El código del estante ya existe. Por favor, elige otro.',
+                buttons: ['OK'],
+              });
+              await alert.present();
+            }
           } catch (error) {
             console.error('Error al guardar el estante:', error);
           }
@@ -75,18 +95,25 @@ export class AddShelfPage implements OnInit {
   }
 
   downloadQR() {
-    const qrElement = document.querySelector('qrcode canvas') as HTMLCanvasElement;
+    const qrElement = document.querySelector(
+      'qrcode canvas'
+    ) as HTMLCanvasElement;
 
     if (qrElement && this.shelfForm.value.code) {
       const imgData = qrElement.toDataURL('image/png');
-      const fileName = `${this.shelfForm.value.code.replace(/\s+/g, '_')}-QR.png`;
+      const fileName = `${this.shelfForm.value.code.replace(
+        /\s+/g,
+        '_'
+      )}-QR.png`;
 
       const a = document.createElement('a');
       a.href = imgData;
       a.download = fileName;
       a.click();
     } else {
-      console.error('No se encontró el elemento QR o el código del estante no está definido.');
+      console.error(
+        'No se encontró el elemento QR o el código del estante no está definido.'
+      );
     }
   }
   goBack() {

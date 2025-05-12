@@ -50,23 +50,37 @@ export class ScanSessionService {
   }
 
   private async addProductToShelf(product: Product) {
-    if (!this.currentShelf) return;
-
+    if (!this.currentShelf) {
+      console.warn('No hay un estante seleccionado actualmente.');
+      return;
+    }
+  
     const shelf = await this.db.getShelfByCode(this.currentShelf.code);
-
+  
+    if (!shelf) {
+      console.error(`No se encontró el estante con código ${this.currentShelf.code}`);
+      return;
+    }
+  
+    if (!Array.isArray(shelf.content)) {
+      shelf.content = [];
+    }
+  
     const alreadyExists = shelf.content.some(p => p.sku === product.sku);
-    if (!alreadyExists) {
-      if (shelf.content.length < shelf.capacity) {
-        shelf.content.push(product);
-        await this.db.updateShelf(shelf.code, { content: shelf.content });
-        console.log(`Producto ${product.sku} añadido a ${shelf.code}`);
-      } else {
-        console.warn('Estante lleno');
-      }
+    if (alreadyExists) {
+      console.warn(`El producto ${product.sku} ya está en el estante.`);
+      return;
+    }
+  
+    if (shelf.content.length < shelf.capacity) {
+      shelf.content.push(product);
+      await this.db.updateShelf(shelf.code, { content: shelf.content });
+      console.log(`Producto ${product.sku} añadido al estante ${shelf.code}`);
     } else {
-      console.warn('Producto ya está en el estante');
+      console.warn(`El estante ${shelf.code} está lleno.`);
     }
   }
+  
 
   private async removeProductFromShelf(product: Product) {
     const shelf = await this.db.findShelfContainingProduct(product.sku);
