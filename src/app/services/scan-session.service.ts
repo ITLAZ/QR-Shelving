@@ -11,60 +11,80 @@ export class ScanSessionService {
   constructor(private db: DatabaseService) {}
 
   async handleScan(data: any) {
-    if (data.code && data.capacity) {
-      // QR corresponde a un estante
-      this.currentShelf = {
-        code: data.code,
-        description: data.description || `Estante ${data.code}`,
-        location: data.location || 'Ubicación desconocida',
-        capacity: data.capacity,
-        size: data.size || 'Tamaño desconocido',
-        createdAt: data.createdAt || new Date().toISOString(),
-        qrCode: data.qrCode || '',
-        content: [],
-        shelf: data.shelf // Inicializamos vacío, luego se sincroniza con la base de datos
-      };
-      this.isReplenishing = true;
-      console.log(`Reponiendo estante: ${data.code}`);
-    } else if (data.sku) {
-      // QR corresponde a un producto
-      const product: Product = {
-        sku: data.sku,
-        name: data.name || 'Producto sin nombre',
-        cost: data.cost || 0,
-        createdAt: data.createdAt || new Date().toISOString(),
-        expires: data.expires || '',
-        lot: data.lot || 'Lote desconocido',
-        price: data.price || 0,
-        qrCode: data.qrCode || '',
-        quantity: data.quantity || 1,
-        shelf: this.isReplenishing
-      };
+    try {
+      if (data.code && data.capacity) {
+        // Estante escaneado
+        this.currentShelf = {
+          code: data.code,
+          description: data.description || `Estante ${data.code}`,
+          location: data.location || 'Ubicación desconocida',
+          capacity: data.capacity,
+          size: data.size || 'Tamaño desconocido',
+          createdAt: data.createdAt || new Date().toISOString(),
+          qrCode: data.qrCode || '',
+          content: [],
+          shelf: data.shelf,
+        };
+        this.isReplenishing = true;
+        console.log(`Reponiendo estante: ${data.code}`);
+      } else if (data.sku) {
+        // Producto escaneado
+        const product: Product = {
+          sku: data.sku,
+          name: data.name || 'Producto sin nombre',
+          cost: data.cost || 0,
+          createdAt: data.createdAt || new Date().toISOString(),
+          expires: data.expires || '',
+          lot: data.lot || 'Lote desconocido',
+          price: data.price || 0,
+          qrCode: data.qrCode || '',
+          quantity: data.quantity || 1,
+          shelf: this.isReplenishing,
+        };
 
-      if (this.isReplenishing && this.currentShelf) {
-        await this.addProductToShelf(product);
-      } else {
-        await this.removeProductFromShelf(product);
+        if (this.isReplenishing && this.currentShelf) {
+          await this.addProductToShelf(product);
+        } else {
+          await this.removeProductFromShelf(product);
+        }
       }
+    } catch (error) {
+      console.error('Error al procesar escaneo:', error);
     }
   }
 
   private async addProductToShelf(product: Product) {
-    if (!this.currentShelf) return;
+    if (!this.currentShelf) {
+      console.warn('No hay un estante seleccionado actualmente.');
+      return;
+    }
 
     const shelf = await this.db.getShelfByCode(this.currentShelf.code);
 
-    const alreadyExists = shelf.content.some(p => p.sku === product.sku);
-    if (!alreadyExists) {
-      if (shelf.content.length < shelf.capacity) {
-        shelf.content.push(product);
-        await this.db.updateShelf(shelf.code, { content: shelf.content });
-        console.log(`Producto ${product.sku} añadido a ${shelf.code}`);
-      } else {
-        console.warn('Estante lleno');
-      }
+    if (!shelf) {
+      console.error(
+        `No se encontró el estante con código ${this.currentShelf.code}`
+      );
+      return;
+    }
+
+    if (!Array.isArray(shelf.content)) {
+      shelf.content = [];
+    }
+
+    const alreadyExists = shelf.content.some((p) => p.sku === product.sku);
+    if (alreadyExists) {
+      console.warn(`El producto ${product.sku} ya está en el estante.`);
+      return;
+    }
+
+    if (shelf.content.length < shelf.capacity) {
+      shelf.content.push(product);
+      await this.db.updateShelf(shelf.code, { content: Array.isArray(shelf.content) ? shelf.content : [] });
+      console.log(`Producto ${product.sku} añadido al estante ${shelf.code}`);
+      console.log('Contenido actual del estante:', shelf.content);
     } else {
-      console.warn('Producto ya está en el estante');
+      console.warn(`El estante ${shelf.code} está lleno.`);
     }
   }
 
@@ -75,8 +95,8 @@ export class ScanSessionService {
       return;
     }
 
-    shelf.content = shelf.content.filter(p => p.sku !== product.sku);
-    await this.db.updateShelf(shelf.code, { content: shelf.content });
+    shelf.content = shelf.content.filter((p) => p.sku !== product.sku);
+    await this.db.updateShelf(shelf.code, { content: Array.isArray(shelf.content) ? shelf.content : [] });
     console.log(`Producto ${product.sku} retirado del estante ${shelf.code}`);
   }
 

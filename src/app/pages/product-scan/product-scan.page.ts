@@ -119,18 +119,18 @@ export class ProductScanPage {
       const doc = await this.databaseService.getFirestoreDocumentID('shelves', code);
       if (doc) {
         const shelf = doc as Shelf;
-
+  
         // Asegurar que el campo content esté definido como array
         if (!Array.isArray(shelf.content)) {
           shelf.content = [];
         }
-
+        
         // Evitar agregar duplicados
         const alreadyLoaded = this.shelves.find((s) => s.code === shelf.code);
         if (!alreadyLoaded) {
           this.shelves.push(shelf);
         }
-
+        
         return shelf;
       }
       return null;
@@ -158,6 +158,7 @@ export class ProductScanPage {
       const allShelves = await firstValueFrom(this.databaseService.fetchFirestoreCollection('shelves')) as Shelf[];
       console.log('Estantes obtenidos:', allShelves);
 
+  
       for (const shelf of allShelves) {
         console.log(`Revisando estante ${shelf.code}`, shelf.content);
         if (!Array.isArray(shelf.content)) continue;
