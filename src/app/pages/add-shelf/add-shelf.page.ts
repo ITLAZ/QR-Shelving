@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DatabaseService } from 'src/app/services/database.service';
 import { AlertController } from '@ionic/angular';
 import { Shelf } from 'src/app/models/shelf.model';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-add-shelf',
@@ -17,7 +18,8 @@ export class AddShelfPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private databaseService: DatabaseService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -86,5 +88,8 @@ export class AddShelfPage implements OnInit {
     } else {
       console.error('No se encontró el elemento QR o el código del estante no está definido.');
     }
+  }
+  goBack() {
+    this.location.back();
   }
 }
